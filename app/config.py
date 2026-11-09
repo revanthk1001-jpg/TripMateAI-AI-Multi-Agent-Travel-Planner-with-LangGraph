@@ -1,0 +1,14 @@
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
+LANGSMITH_TRACING = os.getenv('LANGSMITH_TRACING', 'false')
+LANGSMITH_ENDPOINT = os.getenv('LANGSMITH_ENDPOINT')
+LANGSMITH_API_KEY = os.getenv('LANGSMITH_API_KEY')
+LANGSMITH_PROJECT = os.getenv('LANGSMITH_PROJECT', 'TripMate-AI')
+DATABASE_URL = os.getenv('DATABASE_URL')
+GROQ_API_KEY = os.getenv('GROQ_API_KEY')
+TAVILY_API_KEY = os.getenv('TAVILY_API_KEY')
+AVIATIONSTACK_API_KEY = os.getenv('AVIATIONSTACK_API_KEY')
+DEFAULT_ORIGIN_IATA = os.getenv('DEFAULT_ORIGIN_IATA', 'BLR')
