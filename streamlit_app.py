@@ -553,9 +553,12 @@ if "user_currency" not in st.session_state:
     st.session_state.user_currency = "INR (₹)"
 
 # Sidebar Configuration
+import os as _os
+_DEFAULT_API_URL = _os.environ.get("API_BASE_URL", "http://127.0.0.1:8000")
+
 with st.sidebar:
     st.header("⚙️ Settings")
-    api_base_url = st.text_input("Backend API URL", value="http://127.0.0.1:8000")
+    api_base_url = st.text_input("Backend API URL", value=_DEFAULT_API_URL)
     
     # Check Backend Health (Cached for 30s to eliminate redundant HTTP calls on every click)
     backend_online = check_backend_health(api_base_url)

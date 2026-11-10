@@ -1,0 +1,56 @@
+services:
+
+  # ── PostgreSQL ──────────────────────────────────────────────────────────────
+  db:
+    image: postgres:16-alpine
+    container_name: tripmate_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: tripmate
+      POSTGRES_PASSWORD: tripmate_pass
+      POSTGRES_DB: tripmate
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U tripmate -d tripmate"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ── FastAPI Backend ─────────────────────────────────────────────────────────
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    container_name: tripmate_backend
+    restart: unless-stopped
+    env_file: .env                        # your real API keys come from here
+    environment:
+      # Override DATABASE_URL to point at the db container (not localhost)
+      DATABASE_URL: postgresql://tripmate:tripmate_pass@db:5432/tripmate
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+
+  # ── Streamlit Frontend ──────────────────────────────────────────────────────
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    container_name: tripmate_frontend
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      # Inside Docker, frontend reaches backend via service name, not localhost
+      API_BASE_URL: http://backend:8000
+    ports:
+      - "8501:8501"
+    depends_on:
+      - backend
+
+volumes:
+  postgres_data:
